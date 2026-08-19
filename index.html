@@ -1,1 +1,376 @@
 
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>陈屿 · 个人主页</title>
+<style>
+  :root {
+    --bg: #0e1116;
+    --bg-2: #151a22;
+    --card: #1a212c;
+    --accent: #6ee7b7;
+    --accent-2: #7dd3fc;
+    --text: #e6edf3;
+    --muted: #8b98a5;
+    --radius: 18px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* 背景光晕 */
+  .glow {
+    position: fixed;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    filter: blur(160px);
+    opacity: .35;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow-1 { top: -200px; left: -150px; background: #34d399; }
+  .glow-2 { bottom: -200px; right: -150px; background: #38bdf8; }
+
+  /* 导航 */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 6vw;
+    backdrop-filter: blur(14px);
+    background: rgba(14,17,22,.6);
+    border-bottom: 1px solid rgba(255,255,255,.05);
+  }
+  .logo { font-weight: 800; font-size: 20px; letter-spacing: 1px; }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 15px;
+    transition: color .25s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  .container { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: 0 5vw; }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding-top: 80px;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(110,231,183,.12);
+    border: 1px solid rgba(110,231,183,.3);
+    color: var(--accent);
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 13px; width: fit-content;
+    margin-bottom: 24px;
+  }
+  .badge::before {
+    content: ""; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .hero h1 {
+    font-size: clamp(40px, 7vw, 76px);
+    line-height: 1.1; font-weight: 800; letter-spacing: -1px;
+  }
+  .hero h1 .grad {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+  .typewriter {
+    font-size: clamp(18px, 2.6vw, 26px);
+    color: var(--muted); margin-top: 18px;
+    min-height: 1.5em; font-weight: 500;
+  }
+  .typewriter .cursor {
+    display: inline-block; width: 2px; height: 1.1em;
+    background: var(--accent); margin-left: 4px; vertical-align: -2px;
+    animation: blink .8s steps(2) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .hero p.desc { color: var(--muted); max-width: 560px; margin-top: 24px; font-size: 17px; }
+
+  .cta { display: flex; gap: 16px; margin-top: 40px; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; padding: 13px 30px; border-radius: 999px;
+    text-decoration: none; font-weight: 600; font-size: 15px;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .btn-primary {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: #0a0f0d;
+  }
+  .btn-ghost { border: 1px solid rgba(255,255,255,.2); color: var(--text); }
+  .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+
+  .scroll-hint {
+    position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+    color: var(--muted); font-size: 13px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .scroll-hint .arrow { animation: drop 1.6s infinite; }
+  @keyframes drop { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+
+  /* 通用 section */
+  section { padding: 90px 0; }
+  .section-title { font-size: clamp(28px, 4vw, 40px); font-weight: 800; margin-bottom: 12px; }
+  .section-sub { color: var(--muted); margin-bottom: 48px; }
+
+  /* 关于 */
+  .about-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; }
+  .about-text { color: var(--muted); font-size: 16px; }
+  .about-text strong { color: var(--text); }
+  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .stat-card {
+    background: var(--card); border: 1px solid rgba(255,255,255,.06);
+    border-radius: var(--radius); padding: 26px; text-align: center;
+    transition: transform .3s, border-color .3s;
+  }
+  .stat-card:hover { transform: translateY(-5px); border-color: rgba(110,231,183,.4); }
+  .stat-card .num { font-size: 32px; font-weight: 800; color: var(--accent); }
+  .stat-card .label { color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+  /* 技能 */
+  .skills { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; }
+  .skill {
+    background: var(--card); border: 1px solid rgba(255,255,255,.06);
+    border-radius: var(--radius); padding: 22px;
+    transition: transform .3s;
+  }
+  .skill:hover { transform: translateY(-5px); }
+  .skill .icon { font-size: 26px; }
+  .skill h3 { font-size: 17px; margin: 10px 0 4px; }
+  .skill .bar { height: 6px; background: #2a3340; border-radius: 3px; margin-top: 12px; overflow: hidden; }
+  .skill .bar i {
+    display: block; height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    width: 0; transition: width 1.2s ease;
+  }
+
+  /* 作品 */
+  .works { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+  .work {
+    background: var(--card); border-radius: var(--radius); overflow: hidden;
+    border: 1px solid rgba(255,255,255,.06);
+    transition: transform .3s, border-color .3s;
+  }
+  .work:hover { transform: translateY(-6px); border-color: rgba(125,211,252,.4); }
+  .work-cover {
+    height: 170px; display: flex; align-items: center; justify-content: center;
+    font-size: 48px; color: rgba(255,255,255,.8);
+  }
+  .work-body { padding: 22px; }
+  .work-body h3 { font-size: 18px; }
+  .work-body p { color: var(--muted); font-size: 14px; margin-top: 8px; }
+  .work-body .tag { display: inline-block; margin-top: 14px; font-size: 12px; padding: 3px 12px; border-radius: 999px; background: rgba(125,211,252,.12); color: var(--accent-2); }
+
+  /* 联系 */
+  .contact { text-align: center; }
+  .contact .email {
+    font-size: clamp(20px, 4vw, 32px); font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+    text-decoration: none;
+  }
+  .socials { display: flex; justify-content: center; gap: 18px; margin-top: 32px; }
+  .social {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--card); border: 1px solid rgba(255,255,255,.08);
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; font-size: 22px;
+    transition: transform .25s, border-color .25s;
+  }
+  .social:hover { transform: translateY(-4px); border-color: var(--accent); }
+
+  footer {
+    text-align: center; padding: 36px 0; color: var(--muted); font-size: 14px;
+    border-top: 1px solid rgba(255,255,255,.05);
+  }
+  footer .heart { color: #f87171; }
+
+  /* 滚动出现动画 */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 700px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+
+<nav>
+  <div class="logo">陈<span>屿</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">关于</a></li>
+    <li><a href="#skills">技能</a></li>
+    <li><a href="#works">作品</a></li>
+    <li><a href="#contact">联系</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<header class="hero container">
+  <div class="badge">🚀 现居上海 · 可远程协作</div>
+  <h1>你好，我是<br><span class="grad">陈屿</span></h1>
+  <div class="typewriter"><span id="typed"></span><span class="cursor"></span></div>
+  <p class="desc">一名热爱把复杂问题变简单的前端工程师 &amp; 独立开发者。白天写代码，晚上写点小工具，偶尔做做开源。相信好的产品应该是「不动声色地好用」。</p>
+  <div class="cta">
+    <a class="btn btn-primary" href="#works">看看我的作品</a>
+    <a class="btn btn-ghost" href="#contact">联系我</a>
+  </div>
+  <div class="scroll-hint">向下滚动<span class="arrow">↓</span></div>
+</header>
+
+<!-- 关于 -->
+<section id="about" class="container">
+  <h2 class="section-title reveal">关于我</h2>
+  <p class="section-sub reveal">简单认识一下</p>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      你好！我是<strong>陈屿</strong>，一名有 <strong>6 年经验</strong>的开发者。我的旅程从大学时代写第一个「Hello World」开始，如今专注于<strong>前端工程化</strong>、<strong>交互设计</strong>与<strong>开发者工具</strong>。<br><br>
+      我喜欢把想法快速变成可用的东西——从一个念头到上线，享受那种「从 0 到 1」的过程。工作之外，我是一名咖啡因驱动的长跑爱好者，也热衷于记录和分享技术踩坑经验。
+    </div>
+    <div class="stats reveal">
+      <div class="stat-card"><div class="num" data-count="6">0</div><div class="label">年工作经验</div></div>
+      <div class="stat-card"><div class="num" data-count="42">0</div><div class="label">完成项目</div></div>
+      <div class="stat-card"><div class="num" data-count="1200">0</div><div class="label">GitHub Stars</div></div>
+      <div class="stat-card"><div class="num" data-count="15">0</div><div class="label">开源贡献</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 技能 -->
+<section id="skills" class="container">
+  <h2 class="section-title reveal">技能栈</h2>
+  <p class="section-sub reveal">我的常用武器</p>
+  <div class="skills">
+    <div class="skill reveal"><div class="icon">⚛️</div><h3>React / Next.js</h3><div class="bar"><i data-w="95"></i></div></div>
+    <div class="skill reveal"><div class="icon">🟦</div><h3>TypeScript</h3><div class="bar"><i data-w="90"></i></div></div>
+    <div class="skill reveal"><div class="icon">🎨</div><h3>UI / 交互设计</h3><div class="bar"><i data-w="85"></i></div></div>
+    <div class="skill reveal"><div class="icon">🐍</div><h3>Python</h3><div class="bar"><i data-w="80"></i></div></div>
+    <div class="skill reveal"><div class="icon">🗄️</div><h3>Node.js / 后端</h3><div class="bar"><i data-w="82"></i></div></div>
+    <div class="skill reveal"><div class="icon">☁️</div><h3>云服务 / DevOps</h3><div class="bar"><i data-w="75"></i></div></div>
+  </div>
+</section>
+
+<!-- 作品 -->
+<section id="works" class="container">
+  <h2 class="section-title reveal">精选作品</h2>
+  <p class="section-sub reveal">一些我引以为傲的项目</p>
+  <div class="works">
+    <div class="work reveal">
+      <div class="work-cover" style="background:linear-gradient(135deg,#1e3a5f,#38bdf8)">📝</div>
+      <div class="work-body"><h3>MarkFlow</h3><p>一款极简的 Markdown 协作写作工具，支持实时同步与版本历史。</p><span class="tag">开源</span></div>
+    </div>
+    <div class="work reveal">
+      <div class="work-cover" style="background:linear-gradient(135deg,#3f1e5f,#a855f7)">📊</div>
+      <div class="work-body"><h3>PulseBoard</h3><p>实时数据可视化仪表盘，拖拽式搭建，零代码生成图表。</p><span class="tag">SaaS</span></div>
+    </div>
+    <div class="work reveal">
+      <div class="work-cover" style="background:linear-gradient(135deg,#1e5f3f,#6ee7b7)">🤖</div>
+      <div class="work-body"><h3>DevBuddy</h3><p>本地优先的开发者效率助手，集成代码片段管理与快捷命令。</p><span class="tag">工具</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 联系 -->
+<section id="contact" class="container contact">
+  <h2 class="section-title reveal">保持联系</h2>
+  <p class="section-sub reveal">有想法？随时来聊聊</p>
+  <a class="email reveal" href="mailto:hello@chenyu.dev">hello@chenyu.dev</a>
+  <div class="socials reveal">
+    <a class="social" href="#" title="GitHub">🐙</a>
+    <a class="social" href="#" title="Twitter / X">🐦</a>
+    <a class="social" href="#" title="微博">📮</a>
+    <a class="social" href="#" title="Bilibili">📺</a>
+  </div>
+</section>
+
+<footer>
+  © 2025 陈屿 · 用 <span class="heart">♥</span> 与咖啡驱动
+</footer>
+
+<script>
+  // 打字机效果
+  const phrases = [
+    "前端工程师",
+    "独立开发者",
+    "开源爱好者",
+    "终身学习者"
+  ];
+  const el = document.getElementById('typed');
+  let pi = 0, ci = 0, deleting = false;
+
+  function type() {
+    const current = phrases[pi];
+    if (!deleting) {
+      el.textContent = current.slice(0, ++ci);
+      if (ci === current.length) { deleting = true; setTimeout(type, 1600); return; }
+      setTimeout(type, 90);
+    } else {
+      el.textContent = current.slice(0, --ci);
+      if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; }
+      setTimeout(type, 45);
+    }
+  }
+  type();
+
+  // 滚动出现动画
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        // 触发技能条动画
+        e.target.querySelectorAll('.bar i').forEach(b => {
+          b.style.width = b.dataset.w + '%';
+        });
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // 数字计数动画
+  const counters = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = +el.dataset.count;
+      let cur = 0;
+      const step = Math.ceil(target / 60);
+      const timer = setInterval(() => {
+        cur += step;
+        if (cur >= target) { cur = target; clearInterval(timer); }
+        el.textContent = cur;
+      }, 20);
+      counters.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('[data-count]').forEach(el => counters.observe(el));
+</script>
+</body>
+</html>
